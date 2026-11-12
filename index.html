@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume & Job Matcher — ATS Career Suite</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      scroll-behavior: smooth;
+    }
+    .mark-matched {
+      background-color: #d1fae5;
+      color: #065f46;
+      border-radius: 4px;
+      padding: 1px 4px;
+      font-weight: 600;
+      border: 1px solid #6ee7b7;
+    }
+    .mark-missing {
+      background-color: #ffe4e6;
+      color: #9f1239;
+      border-radius: 4px;
+      padding: 1px 4px;
+      font-weight: 600;
+      border: 1px solid #fda4af;
+    }
+    /* Custom subtle scrollbars */
+    textarea::-webkit-scrollbar,
+    div::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    textarea::-webkit-scrollbar-thumb,
+    div::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- Top Sticky Navigation Bar -->
+  <nav class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-xs">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+          🎯
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight leading-none">Resume & Job Matcher</h1>
+            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider rounded-full">v1.0 Pro</span>
+          </div>
+          <p class="text-[11px] text-slate-500 hidden sm:block mt-0.5">End-to-End ATS Keyword Optimizer, Resume Tailor & Application CRM</p>
+        </div>
+      </div>
+
+      <!-- Quick Jump Links & Live Status -->
+      <div class="flex items-center gap-2 sm:gap-4 text-xs font-semibold">
+        <a href="#discoverySection" class="text-slate-600 hover:text-indigo-600 transition-colors">1. Jobs</a>
+        <a href="#workspaceSection" class="text-slate-600 hover:text-indigo-600 transition-colors">2. Workspace</a>
+        <a href="#resultsContainer" class="text-slate-600 hover:text-indigo-600 transition-colors">3. ATS Tailor</a>
+        <a href="#trackerSection" class="text-slate-600 hover:text-indigo-600 transition-colors">4. Tracker</a>
+        <div class="h-4 w-px bg-slate-200 hidden sm:block"></div>
+        <span id="selectedRoleTag" class="px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-bold rounded-full truncate max-w-[180px] sm:max-w-[240px]">
+          Custom / Sample Role
+        </span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="max-w-6xl mx-auto px-4 py-6 flex-1 w-full space-y-8">
+
+    <!-- Notification Banner -->
+    <div id="noticeBanner" class="hidden p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center justify-between shadow-xs transition-all">
+      <span id="noticeText" class="font-medium">Please enter both text fields before analyzing.</span>
+      <button id="closeNoticeBtn" type="button" class="text-rose-500 hover:text-rose-800 font-bold ml-4 px-2 py-0.5 rounded">✕</button>
+    </div>
+
+    <!-- SECTION 1: Open Job Discovery Feed + Custom Job Adder -->
+    <section id="discoverySection" class="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-xs">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-5 pb-4 border-b border-slate-100">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center">1</span>
+            <h2 class="text-lg font-bold text-slate-900">Find or Add Open Positions</h2>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">Select a curated opening below, or save any external job posting to build a tailored application.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <input id="jobSearchInput" type="text" placeholder="Search title, skill, company..." class="px-3 py-1.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50/50">
+          <select id="jobFilterType" class="px-3 py-1.5 text-xs sm:text-sm border border-slate-300 rounded-xl bg-white text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="All">All Locations</option>
+            <option value="Remote">Remote</option>
+            <option value="Hybrid">Hybrid</option>
+            <option value="On-site">On-site</option>
+          </select>
+          <button id="toggleAddJobFormBtn" type="button" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-xs">
+            + Add Custom Job
+          </button>
+        </div>
+      </div>
+
+      <!-- Collapsible Custom Job Adder Form -->
+      <div id="customJobFormContainer" class="hidden mb-5 p-4 bg-indigo-50/50 border border-indigo-200 rounded-xl space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-indigo-950">Save a Real Job Posting to Your Board</h3>
+          <button id="closeAddJobFormBtn" type="button" class="text-xs text-slate-500 hover:text-slate-800 font-bold">✕ Close</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <input id="newJobTitle" type="text" placeholder="Job Title (e.g. React Developer)" class="px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-lg bg-white">
+          <input id="newJobCompany" type="text" placeholder="Company Name" class="px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-lg bg-white">
+          <select id="newJobLocation" class="px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-lg bg-white text-slate-700">
+            <option value="Remote">Remote</option>
+            <option value="Hybrid">Hybrid</option>
+            <option value="On-site">On-site</option>
+          </select>
+          <input id="newJobSalary" type="text" placeholder="Salary (e.g. $80k - $100k)" class="px-3 py-2 text-xs sm:text-sm border border-slate-300 rounded-lg bg-white">
+        </div>
+        <textarea id="newJobDesc" rows="3" placeholder="Paste the full job description and requirements here..." class="w-full p-2.5 text-xs sm:text-sm border border-slate-300 rounded-lg bg-white font-mono"></textarea>
+        <div class="flex justify-end gap-2">
+          <button id="saveNewJobBtn" type="button" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold rounded-lg shadow-xs transition-colors">
+            Save Job & Load into Tailor
+          </button>
+        </div>
+      </div>
+
+      <!-- Job Feed Cards -->
+      <div id="jobDiscoveryGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+        <!-- Dynamically populated job cards -->
+      </div>
+    </section>
+
+    <!-- SECTION 2: Dual Editor Workspace (Target Job + Working Resume) -->
+    <section id="workspaceSection" class="space-y-4">
+      <!-- Quick Control Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-indigo-50 via-white to-indigo-50 border border-indigo-100 rounded-2xl p-4 shadow-2xs">
+        <div class="flex items-center gap-2.5">
+          <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center shrink-0">2</span>
+          <div class="text-xs sm:text-sm text-slate-800">
+            <span class="font-bold text-slate-900">Compare & Edit Workspace:</span> Changes automatically recalculate your live ATS score below.
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="loadSampleBtn" type="button" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl transition-colors shadow-2xs">
+            Load Sample Data
+          </button>
+          <button id="clearBtn" type="button" class="px-3.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-semibold rounded-xl transition-colors">
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <!-- Two Columns: Job Description & Working Resume -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Left Card: Target Job Description -->
+        <div class="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs flex flex-col">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <label for="jobDesc" class="font-bold text-slate-900 flex items-center gap-2">
+              <span>Target Job Description</span>
+              <span id="heatmapStatusTag" class="hidden px-2 py-0.5 bg-indigo-100 text-indigo-800 text-[10px] font-bold rounded-md">Heatmap Active</span>
+            </label>
+            <span id="jobWordCount" class="text-xs font-medium text-slate-500">0 words</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">Requirements, qualifications, and skills from the job posting.</p>
+
+          <!-- View Switcher Bar -->
+          <div class="flex items-center justify-between gap-2 mb-3 p-2 bg-slate-50 border border-slate-200/80 rounded-xl">
+            <div class="flex items-center gap-1.5 text-xs text-slate-700 font-medium">
+              <button id="jobEditViewBtn" type="button" class="px-2.5 py-1 bg-white shadow-2xs border border-slate-300 rounded-lg font-semibold text-slate-800 text-xs">
+                Raw Text
+              </button>
+              <button id="jobHeatmapViewBtn" type="button" class="px-2.5 py-1 bg-transparent hover:bg-white/70 text-slate-600 rounded-lg text-xs transition-colors">
+                🔍 Keyword Heatmap
+              </button>
+            </div>
+            <div class="text-[11px] text-slate-500 flex items-center gap-2.5 pr-1">
+              <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Matched</span>
+              <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> Missing</span>
+            </div>
+          </div>
+
+          <textarea id="jobDesc" rows="11" placeholder="Paste job description here..." class="w-full flex-1 p-3.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-slate-700 leading-relaxed"></textarea>
+          <div id="jobHeatmapDisplay" class="hidden w-full flex-1 p-3.5 text-xs sm:text-sm border border-indigo-200 bg-slate-50/70 rounded-xl font-mono text-slate-800 whitespace-pre-wrap leading-relaxed overflow-y-auto max-h-[320px]"></div>
+        </div>
+
+        <!-- Right Card: Working Resume + Master Base Vault -->
+        <div class="bg-white border-2 border-indigo-200/80 rounded-2xl p-5 shadow-xs flex flex-col">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+            <label for="resumeText" class="font-bold text-slate-900 flex items-center gap-2">
+              <span>Your Working Resume</span>
+              <span id="baseResumeStatusBadge" class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[11px] font-bold rounded-md">Matches Master Base ✓</span>
+            </label>
+            <span id="resumeWordCount" class="text-xs font-medium text-slate-500">0 words</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">Save your core resume once, then tailor fresh copies for every application.</p>
+
+          <!-- Master Base Resume Toolbar -->
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3 p-2 bg-slate-50 border border-slate-200/80 rounded-xl">
+            <div class="flex flex-wrap items-center gap-1.5">
+              <button id="saveBaseResumeBtn" type="button" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-2xs">
+                💾 Save as Master Base
+              </button>
+              <button id="resetToBaseResumeBtn" type="button" class="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-semibold rounded-lg transition-colors">
+                ↺ Reset to Master Base
+              </button>
+              <button id="resumeDiffToggleBtn" type="button" class="px-2.5 py-1 bg-white hover:bg-slate-100 text-indigo-700 border border-indigo-300 text-xs font-semibold rounded-lg transition-colors">
+                🔎 Inspect Diff
+              </button>
+            </div>
+            <label class="flex items-center gap-1.5 text-[11px] text-slate-600 cursor-pointer select-none pr-1">
+              <input id="autoResetBaseToggle" type="checkbox" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+              <span>Start fresh on job switch</span>
+            </label>
+          </div>
+
+          <textarea id="resumeText" rows="11" placeholder="Paste resume text here..." class="w-full flex-1 p-3.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-slate-700 leading-relaxed"></textarea>
+          <div id="resumeDiffDisplay" class="hidden w-full flex-1 p-3.5 text-xs sm:text-sm border border-indigo-200 bg-slate-50/70 rounded-xl font-mono text-slate-800 whitespace-pre-wrap leading-relaxed overflow-y-auto max-h-[320px]"></div>
+        </div>
+      </div>
+
+      <!-- Primary Action Buttons -->
+      <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+        <button id="analyzeBtn" type="button" class="px-7 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm sm:text-base">
+          Analyze Match & Check ATS Keywords
+        </button>
+        <button id="logApplicationBtn" type="button" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm transition-all transform hover:-translate-y-0.5 active:translate-y-0 text-sm sm:text-base flex items-center gap-2">
+          <span>🚀 Save & Log Tailored Application</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Live Results & ATS Optimization Suite -->
+    <div id="resultsContainer" class="hidden space-y-6">
+      <!-- Score Overview Card -->
+      <div class="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-xs font-bold flex items-center justify-center">3</span>
+            <h2 class="text-lg font-bold text-slate-900">ATS Compatibility & Keyword Analysis</h2>
+          </div>
+          <span class="text-xs text-slate-500">Target score: <strong>75%+</strong> to pass automated screening</span>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/60 text-center">
+            <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Overall Match Score</div>
+            <div id="scoreDisplay" class="text-3xl font-extrabold text-indigo-600">0%</div>
+            <div id="scoreLabel" class="text-xs text-slate-500 mt-1">Pending</div>
+          </div>
+          <div class="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200/70 text-center">
+            <div class="text-xs font-semibold uppercase tracking-wider text-emerald-800 mb-1">Matched Keywords</div>
+            <div id="matchedCount" class="text-3xl font-extrabold text-emerald-600">0</div>
+            <div class="text-xs text-emerald-700 mt-1">Detected in your resume</div>
+          </div>
+          <div class="p-4 rounded-xl bg-rose-50/70 border border-rose-200/70 text-center">
+            <div class="text-xs font-semibold uppercase tracking-wider text-rose-800 mb-1">Missing Keywords</div>
+            <div id="missingCount" class="text-3xl font-extrabold text-rose-600">0</div>
+            <div class="text-xs text-rose-700 mt-1">Click any red badge to tailor</div>
+          </div>
+        </div>
+
+        <div class="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+          <div id="scoreBar" class="bg-indigo-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Keyword Breakdown Lists -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Missing Critical Keywords -->
+        <div class="bg-white border border-rose-200 rounded-2xl p-5 shadow-xs">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+              <h3 class="font-bold text-slate-900">Missing Key Skills & Terms</h3>
+            </div>
+            <span class="text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md">Click badge to tailor ↓</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">Click any missing keyword below to load tailored resume bullet points:</p>
+          <div id="missingKeywordsList" class="flex flex-wrap gap-2 min-h-14 items-start">
+            <!-- Interactive buttons dynamically added -->
+          </div>
+        </div>
+
+        <!-- Matched Keywords -->
+        <div class="bg-white border border-emerald-200 rounded-2xl p-5 shadow-xs">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <h3 class="font-bold text-slate-900">Detected Matches</h3>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">High-priority terms found in both your resume and the job posting:</p>
+          <div id="matchedKeywordsList" class="flex flex-wrap gap-2 min-h-14 items-start">
+            <!-- Badges dynamically added -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Resume Bullet-Point Tailor -->
+      <div class="bg-white border-2 border-indigo-100 rounded-2xl p-6 shadow-xs">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4 border-b border-slate-100 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs font-bold uppercase rounded-md">Resume Tailor</span>
+              <h3 class="text-lg font-bold text-slate-900">Automated Resume Bullet-Point Builder</h3>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-600 mt-1">
+              Weave missing keywords into strong, action-oriented statements that clear algorithmic filters and read naturally to hiring managers.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-medium text-slate-500">Target Skill:</span>
+            <span id="activeKeywordBadge" class="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-lg shadow-2xs">None Selected</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Left: Suggested Templates for Selected Keyword -->
+          <div class="lg:col-span-2 space-y-3">
+            <div class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+              Suggested Action-Verb Statements (Click "+ Insert" to add to your resume & boost score)
+            </div>
+            <div id="bulletSuggestionsList" class="space-y-2.5">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Right: Custom Bullet Builder -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between">
+            <div>
+              <label for="customBulletInput" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                Customize Before Adding
+              </label>
+              <p class="text-xs text-slate-500 mb-2">Edit a suggestion or write your own bullet containing the target keyword:</p>
+              <textarea id="customBulletInput" rows="4" placeholder="Select a missing keyword to load a draft bullet point..." class="w-full p-2.5 text-xs sm:text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 bg-white mb-3 font-mono"></textarea>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <button id="insertCustomBulletBtn" type="button" class="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-2xs">
+                + Insert into Resume & Recalculate
+              </button>
+              <button id="copyResumeBtn" type="button" class="px-3 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-semibold rounded-lg transition-colors">
+                Copy Full Resume
+              </button>
+            </div>
+            <div id="tailorFeedback" class="hidden mt-2 text-xs font-semibold text-emerald-600 text-center"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ATS Formatting Scanner & Cover Letter Generator -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Left: ATS Formatting & Algorithmic Barrier Audit -->
+        <div class="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3 border-b border-slate-100 pb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 bg-purple-100 text-purple-800 text-xs font-bold uppercase rounded-md">Format Audit</span>
+                  <h3 class="text-base sm:text-lg font-bold text-slate-900">ATS Formatting & Barrier Scanner</h3>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">Checks structural rules that automated resume parsers use to score or reject files.</p>
+              </div>
+              <span id="auditSummaryBadge" class="px-2.5 py-1 bg-purple-50 text-purple-800 text-xs font-bold rounded-lg shrink-0">0/4 Passed</span>
+            </div>
+
+            <div id="atsAuditList" class="space-y-3 my-4">
+              <!-- Populated dynamically with pass/warn items and 1-click fixes -->
+            </div>
+          </div>
+
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-xs text-slate-600">
+            <strong>Pro Tip:</strong> Click any <span class="text-indigo-600 font-semibold">+ Quick Fix</span> button above to automatically patch missing structural elements in your working resume.
+          </div>
+        </div>
+
+        <!-- Right: 1-Click Tailored Cover Letter Generator -->
+        <div class="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3 border-b border-slate-100 pb-3">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 bg-indigo-100 text-indigo-800 text-xs font-bold uppercase rounded-md">Cover Letter</span>
+                  <h3 class="text-base sm:text-lg font-bold text-slate-900">1-Click Tailored Cover Letter</h3>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">Combines your target role, company, and matched ATS skills into a ready-to-send letter.</p>
+              </div>
+              <select id="coverLetterTone" class="px-2.5 py-1.5 text-xs font-semibold border border-slate-300 rounded-lg bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="confident">Confident & Impactful</option>
+                <option value="technical">Technical & Precise</option>
+                <option value="enthusiastic">Collaborative & Eager</option>
+              </select>
+            </div>
+
+            <textarea id="coverLetterOutput" rows="9" placeholder="Click 'Generate Cover Letter' below to create a customized letter..." class="w-full p-3.5 text-xs sm:text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-slate-700 bg-slate-50/60 mb-3 leading-relaxed"></textarea>
+          </div>
+
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button id="generateCoverLetterBtn" type="button" class="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-2xs">
+                ✨ Generate / Refresh Cover Letter
+              </button>
+              <button id="copyCoverLetterBtn" type="button" class="px-3.5 py-2 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-semibold rounded-lg transition-colors">
+                Copy Letter
+              </button>
+            </div>
+            <div id="coverLetterFeedback" class="hidden mt-2 text-xs font-semibold text-emerald-600 text-center"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1-Click Application Package Exporter -->
+      <div class="bg-gradient-to-r from-indigo-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-6 shadow-md">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 bg-emerald-400 text-slate-950 text-xs font-extrabold uppercase rounded-md">Export Suite</span>
+              <h3 class="text-lg font-bold">Download Your Tailored Application Package</h3>
+            </div>
+            <p class="text-xs sm:text-sm text-indigo-200">
+              Export your ATS-optimized resume and tailored cover letter as clean, parser-safe plain text files (`.txt`) ready to upload or paste into any portal.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+            <button id="downloadResumeBtn" type="button" class="px-4 py-2.5 bg-white hover:bg-indigo-50 text-slate-900 text-xs sm:text-sm font-bold rounded-xl transition-colors shadow-xs">
+              ⬇ Download Resume (.txt)
+            </button>
+            <button id="downloadCoverLetterBtn" type="button" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white border border-indigo-400 text-xs sm:text-sm font-bold rounded-xl transition-colors shadow-xs">
+              ⬇ Download Cover Letter (.txt)
+            </button>
+            <button id="downloadFullBundleBtn" type="button" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs sm:text-sm font-extrabold rounded-xl transition-colors shadow-xs">
+              📦 Download Full Package (.txt)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: Application Tracker Board -->
+    <section id="trackerSection" class="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-xs">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center">4</span>
+            <h2 class="text-lg font-bold text-slate-900">Your Tailored Application Tracker</h2>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">Track every job you've tailored for, monitor your ATS score at submission, and reload any past resume version.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span id="trackerCountBadge" class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-bold rounded-lg">0 Applications</span>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-50/80">
+              <th class="py-3 px-4 rounded-tl-lg">Role & Company</th>
+              <th class="py-3 px-4">Location</th>
+              <th class="py-3 px-4">ATS Match Score</th>
+              <th class="py-3 px-4">Status</th>
+              <th class="py-3 px-4 text-right rounded-tr-lg">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="applicationsTableBody" class="divide-y divide-slate-200 text-sm">
+            <!-- Dynamically populated application rows -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Stop words to exclude common boilerplate words
+    const STOP_WORDS = new Set([
+      'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and', 'any', 'are', 'aren\'t', 'as', 'at',
+      'be', 'because', 'been', 'before', 'being', 'below', 'between', 'both', 'but', 'by', 'can', 'cannot', 'could',
+      'did', 'do', 'does', 'doing', 'down', 'during', 'each', 'few', 'for', 'from', 'further', 'had', 'has', 'have',
+      'having', 'he', 'her', 'here', 'hers', 'herself', 'him', 'himself', 'his', 'how', 'i', 'if', 'in', 'into', 'is',
+      'it', 'its', 'itself', 'just', 'me', 'more', 'most', 'my', 'myself', 'no', 'nor', 'not', 'of', 'off', 'on',
+      'once', 'only', 'or', 'other', 'our', 'ours', 'ourselves', 'out', 'over', 'own', 'same', 'she', 'should', 'so',
+      'some', 'such', 'than', 'that', 'the', 'their', 'theirs', 'them', 'themselves', 'then', 'there', 'these', 'they',
+      'this', 'those', 'through', 'to', 'too', 'under', 'until', 'up', 'very', 'was', 'we', 'were', 'what', 'when',
+      'where', 'which', 'while', 'who', 'whom', 'why', 'with', 'would', 'you', 'your', 'yours', 'yourself', 'yourselves',
+      'will', 'work', 'job', 'team', 'experience', 'years', 'looking', 'role', 'requirements', 'qualifications', 'must',
+      'position', 'strong', 'knowledge', 'understanding', 'familiarity', 'excellent', 'skills', 'ability'
+    ]);
+
+    // Curated Open Positions
+    let OPEN_JOBS = [
+      {
+        id: 'job-1',
+        title: 'Junior Full-Stack Web Developer',
+        company: 'NovaTech Solutions',
+        location: 'Remote',
+        salary: '$75k – $90k',
+        description: `Position: Junior Full-Stack Web Developer at NovaTech Solutions
+Requirements:
+- Strong foundational knowledge of JavaScript, HTML5, and CSS3
+- Hands-on experience with modern front-end frameworks like React or Vue
+- Understanding of REST APIs, Git version control, and responsive web design
+- Familiarity with Node.js and SQL database basics
+- Excellent collaboration, agile workflows, and problem-solving skills`
+      },
+      {
+        id: 'job-2',
+        title: 'Frontend UI Engineer',
+        company: 'PixelCraft Studio',
+        location: 'Hybrid',
+        salary: '$85k – $105k',
+        description: `Position: Frontend UI Engineer at PixelCraft Studio
+Requirements:
+- Proficiency in TypeScript, React, JavaScript, and modern CSS frameworks like Tailwind
+- Experience building accessible, responsive interfaces and reusable design systems
+- Strong familiarity with Git, Figma prototyping, performance optimization, and unit testing
+- Ability to partner with product designers and backend engineers in agile sprints`
+      },
+      {
+        id: 'job-3',
+        title: 'Data & Automation Analyst',
+        company: 'CloudMetrics Inc.',
+        location: 'Remote',
+        salary: '$70k – $88k',
+        description: `Position: Data & Automation Analyst at CloudMetrics Inc.
+Requirements:
+- Strong analytical skills using Python, SQL, and Excel spreadsheets
+- Experience creating automated data pipelines, dashboards, and reporting scripts
+- Familiarity with REST APIs, Git version control, data visualization, and ETL workflows
+- Detail-oriented problem-solving mindset and clear communication skills`
+      },
+      {
+        id: 'job-4',
+        title: 'Technical Product Specialist',
+        company: 'ApexFlow Systems',
+        location: 'On-site',
+        salary: '$68k – $82k',
+        description: `Position: Technical Product Specialist at ApexFlow Systems
+Requirements:
+- Foundational understanding of web technologies including HTML, CSS, JavaScript, and SQL
+- Experience troubleshooting software applications, APIs, and customer workflows
+- Strong documentation skills, agile collaboration, and customer support empathy
+- Ability to translate user feedback into actionable technical bug reports`
+      }
+    ];
+
+    try {
+      const storedJobs = localStorage.getItem('ats_open_jobs');
+      if (storedJobs) {
+        const parsedJobs = JSON.parse(storedJobs);
+        if (Array.isArray(parsedJobs) && parsedJobs.length > 0) {
+          OPEN_JOBS = parsedJobs;
+        }
+      }
+    } catch (e) {
+      // Ignore storage errors
+    }
+
+    function persistOpenJobs() {
+      try {
+        localStorage.setItem('ats_open_jobs', JSON.stringify(OPEN_JOBS));
+      } catch (e) {
+        // Ignore storage errors
+      }
+    }
+
+    // Sample Data
+    const SAMPLE_JOB = OPEN_JOBS[0].description;
+
+    const SAMPLE_RESUME = `Alex Chen - Software Developer
+Email: alex.chen@email.com | Phone: (555) 234-5678 | Location: Remote
+Summary: Motivated junior programmer with a passion for web development and clean code.
+Skills: HTML, CSS, JavaScript, Git, Python, Problem Solving.
+Experience:
+- Built responsive personal websites using HTML and modern CSS styling, improving page load speed by 30%.
+- Collaborated on group projects using Git version control and agile workflows.
+- Designed automated data analysis scripts using Python.
+Education:
+- B.S. in Computer Science & Web Development (Graduated 2025)`;
+
+    let masterBaseResume = SAMPLE_RESUME;
+    try {
+      const storedBase = localStorage.getItem('ats_master_base_resume');
+      if (storedBase && storedBase.trim().length > 0) {
+        masterBaseResume = storedBase;
+      }
+    } catch (e) {
+      // Ignore storage errors
+    }
+
+    const jobDescInput = document.getElementById('jobDesc');
+    const resumeTextInput = document.getElementById('resumeText');
+    const jobWordCount = document.getElementById('jobWordCount');
+    const resumeWordCount = document.getElementById('resumeWordCount');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const loadSampleBtn = document.getElementById('loadSampleBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const noticeBanner = document.getElementById('noticeBanner');
+    const noticeText = document.getElementById('noticeText');
+    const closeNoticeBtn = document.getElementById('closeNoticeBtn');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const scoreLabel = document.getElementById('scoreLabel');
+    const scoreBar = document.getElementById('scoreBar');
+    const matchedCount = document.getElementById('matchedCount');
+    const missingCount = document.getElementById('missingCount');
+    const missingKeywordsList = document.getElementById('missingKeywordsList');
+    const matchedKeywordsList = document.getElementById('matchedKeywordsList');
+
+    // Step 2 DOM Elements
+    const activeKeywordBadge = document.getElementById('activeKeywordBadge');
+    const bulletSuggestionsList = document.getElementById('bulletSuggestionsList');
+    const customBulletInput = document.getElementById('customBulletInput');
+    const insertCustomBulletBtn = document.getElementById('insertCustomBulletBtn');
+    const copyResumeBtn = document.getElementById('copyResumeBtn');
+    const tailorFeedback = document.getElementById('tailorFeedback');
+
+    // Step 3 DOM Elements
+    const jobSearchInput = document.getElementById('jobSearchInput');
+    const jobFilterType = document.getElementById('jobFilterType');
+    const jobDiscoveryGrid = document.getElementById('jobDiscoveryGrid');
+    const selectedRoleTag = document.getElementById('selectedRoleTag');
+    const logApplicationBtn = document.getElementById('logApplicationBtn');
+    const applicationsTableBody = document.getElementById('applicationsTableBody');
+    const trackerCountBadge = document.getElementById('trackerCountBadge');
+
+    // Step 4 DOM Elements
+    const auditSummaryBadge = document.getElementById('auditSummaryBadge');
+    const atsAuditList = document.getElementById('atsAuditList');
+    const coverLetterTone = document.getElementById('coverLetterTone');
+    const coverLetterOutput = document.getElementById('coverLetterOutput');
+    const generateCoverLetterBtn = document.getElementById('generateCoverLetterBtn');
+    const copyCoverLetterBtn = document.getElementById('copyCoverLetterBtn');
+    const coverLetterFeedback = document.getElementById('coverLetterFeedback');
+
+    // Step 5 DOM Elements
+    const toggleAddJobFormBtn = document.getElementById('toggleAddJobFormBtn');
+    const closeAddJobFormBtn = document.getElementById('closeAddJobFormBtn');
+    const customJobFormContainer = document.getElementById('customJobFormContainer');
+    const newJobTitle = document.getElementById('newJobTitle');
+    const newJobCompany = document.getElementById('newJobCompany');
+    const newJobLocation = document.getElementById('newJobLocation');
+    const newJobSalary = document.getElementById('newJobSalary');
+    const newJobDesc = document.getElementById('newJobDesc');
+    const saveNewJobBtn = document.getElementById('saveNewJobBtn');
+    const downloadResumeBtn = document.getElementById('downloadResumeBtn');
+    const downloadCoverLetterBtn = document.getElementById('downloadCoverLetterBtn');
+    const downloadFullBundleBtn = document.getElementById('downloadFullBundleBtn');
+
+    // Step 6 DOM Elements
+    const saveBaseResumeBtn = document.getElementById('saveBaseResumeBtn');
+    const resetToBaseResumeBtn = document.getElementById('resetToBaseResumeBtn');
+    const autoResetBaseToggle = document.getElementById('autoResetBaseToggle');
+    const baseResumeStatusBadge = document.getElementById('baseResumeStatusBadge');
+
+    // Step 7 DOM Elements
+    const jobEditViewBtn = document.getElementById('jobEditViewBtn');
+    const jobHeatmapViewBtn = document.getElementById('jobHeatmapViewBtn');
+    const jobHeatmapDisplay = document.getElementById('jobHeatmapDisplay');
+    const heatmapStatusTag = document.getElementById('heatmapStatusTag');
+    const resumeDiffToggleBtn = document.getElementById('resumeDiffToggleBtn');
+    const resumeDiffDisplay = document.getElementById('resumeDiffDisplay');
+
+    let currentActiveKeyword = null;
+    let currentSelectedJob = {
+      title: OPEN_JOBS[0].title,
+      company: OPEN_JOBS[0].company,
+      location: OPEN_JOBS[0].location
+    };
+    let lastCalculatedScore = 0;
+    let lastMatchedKeywords = [];
+    let lastMissingKeywords = [];
+    let isDiffViewActive = false;
+    let isHeatmapViewActive = false;
+    let liveAnalysisTimer = null;
+
+    // Saved Applications State
+    let savedApplications = [
+      {
+        id: 'app-init-1',
+        title: 'Junior Web Developer',
+        company: 'BrightWave Digital',
+        location: 'Remote',
+        score: 85,
+        status: 'Applied',
+        resumeSnapshot: SAMPLE_RESUME
+      }
+    ];
+
+    try {
+      const stored = localStorage.getItem('ats_saved_applications');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          savedApplications = parsed;
+        }
+      }
+    } catch (e) {
+      // Ignore storage errors
+    }
+
+    function persistApplications() {
+      try {
+        localStorage.setItem('ats_saved_applications', JSON.stringify(savedApplications));
+      } catch (e) {
+        // Ignore storage errors
+      }
+    }
+
+    function showNotice(msg, isSuccess = false) {
+      noticeText.textContent = msg;
+      if (isSuccess) {
+        noticeBanner.className = 'p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-between shadow-xs';
+      } else {
+        noticeBanner.className = 'p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center justify-between shadow-xs';
+      }
+      noticeBanner.classList.remove('hidden');
+    }
+
+    function showTailorFeedback(msg) {
+      tailorFeedback.textContent = msg;
+      tailorFeedback.classList.remove('hidden');
+      setTimeout(() => {
+        tailorFeedback.classList.add('hidden');
+      }, 3000);
+    }
+
+    function showCoverLetterFeedback(msg) {
+      coverLetterFeedback.textContent = msg;
+      coverLetterFeedback.classList.remove('hidden');
+      setTimeout(() => {
+        coverLetterFeedback.classList.add('hidden');
+      }, 3000);
+    }
+
+    closeNoticeBtn.addEventListener('click', () => {
+      noticeBanner.classList.add('hidden');
+    });
+
+    function updateBaseStatusBadge() {
+      const current = resumeTextInput.value.trim();
+      const base = masterBaseResume.trim();
+      if (!current) {
+        baseResumeStatusBadge.textContent = 'Empty';
+        baseResumeStatusBadge.className = 'px-2 py-0.5 bg-slate-100 text-slate-600 text-[11px] font-bold rounded-md';
+      } else if (current === base) {
+        baseResumeStatusBadge.textContent = 'Matches Master Base ✓';
+        baseResumeStatusBadge.className = 'px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[11px] font-bold rounded-md';
+      } else {
+        baseResumeStatusBadge.textContent = 'Tailored Copy (Modified from Base)';
+        baseResumeStatusBadge.className = 'px-2 py-0.5 bg-amber-100 text-amber-800 text-[11px] font-bold rounded-md';
+      }
+    }
+
+    function scheduleLiveAnalysis() {
+      if (liveAnalysisTimer) clearTimeout(liveAnalysisTimer);
+      liveAnalysisTimer = setTimeout(() => {
+        if (jobDescInput.value.trim() && resumeTextInput.value.trim()) {
+          runAnalysis(true);
+        }
+      }, 350);
+    }
+
+    function updateWordCounts() {
+      const jobWords = (jobDescInput.value.trim().match(/\S+/g) || []).length;
+      const resumeWords = (resumeTextInput.value.trim().match(/\S+/g) || []).length;
+      jobWordCount.textContent = `${jobWords} words`;
+      resumeWordCount.textContent = `${resumeWords} words`;
+      updateBaseStatusBadge();
+      if (isHeatmapViewActive) {
+        renderJobHeatmap();
+      }
+      if (isDiffViewActive) {
+        renderResumeDiff();
+      }
+    }
+
+    jobDescInput.addEventListener('input', () => {
+      updateWordCounts();
+      noticeBanner.classList.add('hidden');
+      scheduleLiveAnalysis();
+    });
+    resumeTextInput.addEventListener('input', () => {
+      updateWordCounts();
+      noticeBanner.classList.add('hidden');
+      scheduleLiveAnalysis();
+    });
+
+    // Step 7: Smart Keyword Heatmap Renderer
+    function renderJobHeatmap() {
+      const text = jobDescInput.value;
+      if (!text.trim()) {
+        jobHeatmapDisplay.innerHTML = '<span class="italic text-slate-400">Enter a job description and click Analyze to view the keyword heatmap.</span>';
+        return;
+      }
+
+      if (lastMatchedKeywords.length === 0 && lastMissingKeywords.length === 0) {
+        jobHeatmapDisplay.textContent = text;
+        return;
+      }
+
+      const matchedSet = new Set(lastMatchedKeywords.map(k => k.toLowerCase()));
+      const missingSet = new Set(lastMissingKeywords.map(k => k.toLowerCase()));
+
+      const tokens = text.split(/(\b[a-zA-Z0-9#+.]+\b)/);
+      const frag = document.createDocumentFragment();
+
+      tokens.forEach(tok => {
+        const lower = tok.toLowerCase().replace(/^[.]+|[.]+$/g, '');
+        if (matchedSet.has(lower)) {
+          const mark = document.createElement('mark');
+          mark.className = 'mark-matched';
+          mark.textContent = tok;
+          frag.appendChild(mark);
+        } else if (missingSet.has(lower)) {
+          const mark = document.createElement('mark');
+          mark.className = 'mark-missing';
+          mark.textContent = tok;
+          frag.appendChild(mark);
+        } else {
+          frag.appendChild(document.createTextNode(tok));
+        }
+      });
+
+      jobHeatmapDisplay.innerHTML = '';
+      jobHeatmapDisplay.appendChild(frag);
+    }
+
+    jobHeatmapViewBtn.addEventListener('click', () => {
+      isHeatmapViewActive = true;
+      jobDescInput.classList.add('hidden');
+      jobHeatmapDisplay.classList.remove('hidden');
+      heatmapStatusTag.classList.remove('hidden');
+      jobHeatmapViewBtn.className = 'px-2.5 py-1 bg-white shadow-2xs border border-indigo-300 text-indigo-700 font-semibold rounded-lg text-xs';
+      jobEditViewBtn.className = 'px-2.5 py-1 bg-transparent hover:bg-white/70 text-slate-600 rounded-lg text-xs transition-colors';
+      renderJobHeatmap();
+    });
+
+    jobEditViewBtn.addEventListener('click', () => {
+      isHeatmapViewActive = false;
+      jobHeatmapDisplay.classList.add('hidden');
+      heatmapStatusTag.classList.add('hidden');
+      jobDescInput.classList.remove('hidden');
+      jobEditViewBtn.className = 'px-2.5 py-1 bg-white shadow-2xs border border-slate-300 rounded-lg font-semibold text-slate-800 text-xs';
+      jobHeatmapViewBtn.className = 'px-2.5 py-1 bg-transparent hover:bg-white/70 text-slate-600 rounded-lg text-xs transition-colors';
+    });
+
+    // Step 7: Resume Diff Inspector Renderer
+    function renderResumeDiff() {
+      const baseLines = masterBaseResume.split('\n');
+      const currentLines = resumeTextInput.value.split('\n');
+      const baseSet = new Set(baseLines.map(l => l.trim()).filter(l => l.length > 0));
+
+      let addedCount = 0;
+      resumeDiffDisplay.innerHTML = '';
+
+      const container = document.createElement('div');
+      container.className = 'space-y-1';
+
+      currentLines.forEach(line => {
+        const trimmed = line.trim();
+        const row = document.createElement('div');
+        row.className = 'py-0.5 px-1.5 rounded flex items-start gap-2';
+
+        if (trimmed.length > 0 && !baseSet.has(trimmed)) {
+          addedCount++;
+          row.className += ' bg-emerald-100/70 border-l-4 border-emerald-500 text-emerald-950 font-semibold';
+          row.innerHTML = `<span class="text-emerald-700 font-bold select-none">+</span><span>${escapeHtml(line)}</span>`;
+        } else {
+          row.className += ' text-slate-700';
+          row.innerHTML = `<span class="text-slate-400 select-none">&nbsp;</span><span>${escapeHtml(line)}</span>`;
+        }
+        container.appendChild(row);
+      });
+
+      const header = document.createElement('div');
+      header.className = 'mb-3 pb-2 border-b border-slate-200 text-xs flex items-center justify-between';
+      header.innerHTML = `
+        <span class="font-bold text-slate-900">Comparing Working Resume vs. Master Base:</span>
+        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">+${addedCount} Tailored Line${addedCount === 1 ? '' : 's'} Added</span>
+      `;
+
+      resumeDiffDisplay.appendChild(header);
+      resumeDiffDisplay.appendChild(container);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    resumeDiffToggleBtn.addEventListener('click', () => {
+      isDiffViewActive = !isDiffViewActive;
+      if (isDiffViewActive) {
+        resumeTextInput.classList.add('hidden');
+        resumeDiffDisplay.classList.remove('hidden');
+        resumeDiffToggleBtn.textContent = '✏️ Edit Resume';
+        resumeDiffToggleBtn.className = 'px-2.5 py-1 bg-indigo-600 text-white font-semibold rounded-lg text-xs shadow-2xs';
+        renderResumeDiff();
+      } else {
+        resumeDiffDisplay.classList.add('hidden');
+        resumeTextInput.classList.remove('hidden');
+        resumeDiffToggleBtn.textContent = '🔎 Inspect Diff';
+        resumeDiffToggleBtn.className = 'px-2.5 py-1 bg-white hover:bg-slate-100 text-indigo-700 border border-indigo-300 text-xs font-semibold rounded-lg transition-colors';
+      }
+    });
+
+    // Step 6: Save Master Base Resume & Reset Handlers
+    saveBaseResumeBtn.addEventListener('click', () => {
+      const current = resumeTextInput.value.trim();
+      if (!current) {
+        showNotice('Please enter your starting resume text before saving it as your Master Base.');
+        return;
+      }
+      masterBaseResume = current;
+      try {
+        localStorage.setItem('ats_master_base_resume', masterBaseResume);
+      } catch (e) {
+        // Ignore storage errors
+      }
+      updateBaseStatusBadge();
+      if (isDiffViewActive) {
+        renderResumeDiff();
+      }
+      showNotice('Saved current resume as your Master Base Resume! Every new job you tailor can now build cleanly from this version.', true);
+    });
+
+    resetToBaseResumeBtn.addEventListener('click', () => {
+      resumeTextInput.value = masterBaseResume;
+      updateWordCounts();
+      if (jobDescInput.value.trim()) {
+        runAnalysis(true);
+      }
+      if (isDiffViewActive) {
+        renderResumeDiff();
+      }
+      showNotice('Reset working resume back to your clean Master Base Resume!', true);
+    });
+
+    // Step 5: Custom Job Form Toggle & Save
+    toggleAddJobFormBtn.addEventListener('click', () => {
+      customJobFormContainer.classList.toggle('hidden');
+    });
+
+    closeAddJobFormBtn.addEventListener('click', () => {
+      customJobFormContainer.classList.add('hidden');
+    });
+
+    saveNewJobBtn.addEventListener('click', () => {
+      const title = newJobTitle.value.trim();
+      const company = newJobCompany.value.trim() || 'Hiring Company';
+      const location = newJobLocation.value;
+      const salary = newJobSalary.value.trim() || 'Competitive';
+      const desc = newJobDesc.value.trim();
+
+      if (!title || !desc) {
+        showNotice('Please enter at least a Job Title and the Job Description to add a custom job.');
+        return;
+      }
+
+      const customJob = {
+        id: 'job-' + Date.now(),
+        title,
+        company,
+        location,
+        salary,
+        description: `Position: ${title} at ${company}\nRequirements:\n${desc}`
+      };
+
+      OPEN_JOBS.unshift(customJob);
+      persistOpenJobs();
+      renderJobDiscovery();
+
+      newJobTitle.value = '';
+      newJobCompany.value = '';
+      newJobSalary.value = '';
+      newJobDesc.value = '';
+      customJobFormContainer.classList.add('hidden');
+
+      currentSelectedJob = { title: customJob.title, company: customJob.company, location: customJob.location };
+      selectedRoleTag.textContent = `${customJob.title} @ ${customJob.company}`;
+      jobDescInput.value = customJob.description;
+      if (autoResetBaseToggle.checked || !resumeTextInput.value.trim()) {
+        resumeTextInput.value = masterBaseResume;
+      }
+      updateWordCounts();
+      runAnalysis();
+      showNotice(`Added "${customJob.title}" at ${customJob.company} and loaded your Master Base Resume to tailor!`, true);
+    });
+
+    // Step 5: File Download Helper (Blob -> Anchor Trigger)
+    function downloadTextFile(filename, textContent) {
+      const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function getCleanFilenameSlug() {
+      const slug = `${currentSelectedJob.company || 'company'}_${currentSelectedJob.title || 'role'}`
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_|_$/g, '');
+      return slug || 'tailored_application';
+    }
+
+    downloadResumeBtn.addEventListener('click', () => {
+      const text = resumeTextInput.value.trim();
+      if (!text) return;
+      downloadTextFile(`resume_${getCleanFilenameSlug()}.txt`, text);
+    });
+
+    downloadCoverLetterBtn.addEventListener('click', () => {
+      const text = coverLetterOutput.value.trim();
+      if (!text) return;
+      downloadTextFile(`cover_letter_${getCleanFilenameSlug()}.txt`, text);
+    });
+
+    downloadFullBundleBtn.addEventListener('click', () => {
+      const res = resumeTextInput.value.trim();
+      const cov = coverLetterOutput.value.trim();
+      const combined = `=========================================\nTAILORED APPLICATION PACKAGE\nRole: ${currentSelectedJob.title} @ ${currentSelectedJob.company}\nATS Match Score: ${lastCalculatedScore}%\n=========================================\n\n--- 1. TAILORED RESUME ---\n\n${res}\n\n\n--- 2. TAILORED COVER LETTER ---\n\n${cov}\n`;
+      downloadTextFile(`application_bundle_${getCleanFilenameSlug()}.txt`, combined);
+    });
+
+    // Step 4: Run ATS Formatting & Algorithmic Barrier Audit
+    function runAtsFormattingAudit(resumeText) {
+      const lower = resumeText.toLowerCase();
+
+      const hasEmail = /\S+@\S+\.\S+/.test(resumeText);
+      const hasPhone = /\d{3}[-.\s)]*\d{3}[-.\s]?\d{4}/.test(resumeText);
+      const contactPassed = hasEmail && hasPhone;
+
+      const hasSummary = lower.includes('summary') || lower.includes('profile');
+      const hasSkills = lower.includes('skills');
+      const hasExperience = lower.includes('experience');
+      const hasEducation = lower.includes('education');
+      const sectionsPassed = hasSummary && hasSkills && hasExperience && hasEducation;
+
+      const hasMetrics = /(\d+%|\$\d+|\d+\+?\s*(users|projects|requests|clients|hours|team|features|scripts|pages))/i.test(resumeText);
+
+      const strongVerbs = ['built', 'designed', 'implemented', 'developed', 'collaborated', 'engineered', 'automated', 'optimized', 'delivered'];
+      const foundVerbs = strongVerbs.filter(v => lower.includes(v));
+      const verbsPassed = foundVerbs.length >= 3;
+
+      const checks = [
+        {
+          title: 'Machine-Readable Contact Info',
+          passed: contactPassed,
+          desc: contactPassed
+            ? 'Email and phone number detected for ATS profile extraction.'
+            : 'Missing email address or phone number—many ATS parsers skip uncontactable profiles.',
+          fixLabel: '+ Quick Fix Contact Header',
+          fixAction: () => {
+            resumeTextInput.value = `Email: alex.chen@email.com | Phone: (555) 234-5678 | Location: Remote\n` + resumeTextInput.value.trim();
+            updateWordCounts();
+            runAnalysis(true);
+          }
+        },
+        {
+          title: 'Standard ATS Section Headers',
+          passed: sectionsPassed,
+          desc: sectionsPassed
+            ? 'All core sections (Summary, Skills, Experience, Education) are clearly labeled.'
+            : 'Missing standard section headers (e.g., Education)—parsers may misclassify your history.',
+          fixLabel: '+ Quick Fix Education Section',
+          fixAction: () => {
+            resumeTextInput.value = resumeTextInput.value.trim() + `\n\nEducation:\n- B.S. in Computer Science / Web Development Coursework (Graduated 2025)`;
+            updateWordCounts();
+            runAnalysis(true);
+          }
+        },
+        {
+          title: 'Quantified Impact & Metrics',
+          passed: hasMetrics,
+          desc: hasMetrics
+            ? 'Measurable numbers or percentages found in your accomplishments.'
+            : 'No measurable numbers (%, $, or counts) detected—ranking algorithms boost quantified impact.',
+          fixLabel: '+ Quick Fix Impact Metric',
+          fixAction: () => {
+            resumeTextInput.value = resumeTextInput.value.trim() + `\n- Optimized front-end page load performance by 35% across 10+ responsive web pages.`;
+            updateWordCounts();
+            runAnalysis(true);
+          }
+        },
+        {
+          title: 'Action-Verb Density',
+          passed: verbsPassed,
+          desc: verbsPassed
+            ? `Strong action verbs detected (${foundVerbs.slice(0, 4).join(', ')}).`
+            : 'Fewer than 3 strong action verbs detected—start bullets with words like Built, Implemented, or Optimized.',
+          fixLabel: '+ Quick Fix Action Bullet',
+          fixAction: () => {
+            resumeTextInput.value = resumeTextInput.value.trim() + `\n- Engineered and automated modular workflow components to streamline team delivery.`;
+            updateWordCounts();
+            runAnalysis(true);
+          }
+        }
+      ];
+
+      const passedCount = checks.filter(c => c.passed).length;
+      auditSummaryBadge.textContent = `${passedCount}/${checks.length} Passed`;
+      auditSummaryBadge.className =
+        passedCount === checks.length
+          ? 'px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-lg shrink-0'
+          : 'px-2.5 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-lg shrink-0';
+
+      atsAuditList.innerHTML = '';
+      checks.forEach(check => {
+        const row = document.createElement('div');
+        row.className = `p-3 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+          check.passed ? 'bg-emerald-50/50 border-emerald-200' : 'bg-amber-50/60 border-amber-200'
+        }`;
+
+        const info = document.createElement('div');
+        info.innerHTML = `
+          <div class="flex items-center gap-1.5 font-semibold text-xs sm:text-sm ${check.passed ? 'text-emerald-900' : 'text-amber-900'}">
+            <span>${check.passed ? '✅' : '⚠️'}</span>
+            <span>${check.title}</span>
+          </div>
+          <p class="text-xs text-slate-600 mt-0.5">${check.desc}</p>
+        `;
+
+        row.appendChild(info);
+
+        if (!check.passed) {
+          const fixBtn = document.createElement('button');
+          fixBtn.type = 'button';
+          fixBtn.className = 'px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shrink-0 transition-colors shadow-2xs';
+          fixBtn.textContent = check.fixLabel;
+          fixBtn.addEventListener('click', check.fixAction);
+          row.appendChild(fixBtn);
+        }
+
+        atsAuditList.appendChild(row);
+      });
+    }
+
+    // Step 4: Generate Tailored Cover Letter
+    function generateTailoredCoverLetter() {
+      const role = currentSelectedJob.title || 'Open Position';
+      const company = currentSelectedJob.company || 'Hiring Team';
+      const tone = coverLetterTone.value;
+
+      const firstLine = (resumeTextInput.value.trim().split('\n')[0] || 'Candidate').replace(/Email:.*$/i, '').split('-')[0].trim() || 'Alex Chen';
+      const topSkills = lastMatchedKeywords.length > 0
+        ? lastMatchedKeywords.slice(0, 5).join(', ')
+        : 'JavaScript, HTML, CSS, and problem-solving';
+
+      let opening = '';
+      let body = '';
+      let closing = '';
+
+      if (tone === 'confident') {
+        opening = `Dear Hiring Manager at ${company},\n\nI am writing to apply for the ${role} position at ${company}. With a proven track record of delivering clean, maintainable solutions and direct hands-on proficiency in ${topSkills}, I am confident in my ability to make an immediate impact on your engineering and product goals.`;
+        body = `In my recent work, I have focused on building responsive, user-focused applications while adhering to modern development workflows and version control standards. I pride myself on translating complex requirements into reliable, high-performing features that align directly with what ${company} is looking for in this role.`;
+        closing = `I would welcome the opportunity to discuss how my background and tailored skill set align with your team's roadmap. Thank you for your time and consideration.\n\nSincerely,\n${firstLine}`;
+      } else if (tone === 'technical') {
+        opening = `Dear ${company} Engineering & Hiring Team,\n\nPlease accept this application for the ${role} opening. Having closely reviewed your technical requirements, my background aligns directly with your stack—specifically across ${topSkills}.`;
+        body = `Throughout my projects, I have prioritized modular architecture, clean code execution, and structured debugging. Whether integrating APIs, optimizing front-end responsiveness, or collaborating via Git workflows, I focus on writing resilient code that passes rigorous quality standards.`;
+        closing = `I have attached my tailored resume detailing my technical projects and metrics. I look forward to speaking with you about contributing to ${company}.\n\nBest regards,\n${firstLine}`;
+      } else {
+        opening = `Dear ${company} Team,\n\nI was thrilled to see the opening for the ${role} role at ${company}! As a dedicated developer passionate about continuous learning and collaborative problem-solving, I am excited to bring my experience in ${topSkills} to your organization.`;
+        body = `I thrive in agile, team-oriented environments where clear communication and shared ownership drive great products. My hands-on work building responsive web applications and automating workflows has prepared me to jump right in and support ${company}'s mission from day one.`;
+        closing = `Thank you so much for reviewing my application. I would love the chance to connect and share more about how I can support your team!\n\nWarm regards,\n${firstLine}`;
+      }
+
+      coverLetterOutput.value = `${opening}\n\n${body}\n\n${closing}`;
+    }
+
+    generateCoverLetterBtn.addEventListener('click', () => {
+      generateTailoredCoverLetter();
+      showCoverLetterFeedback('Tailored cover letter updated with your latest matched keywords!');
+    });
+
+    coverLetterTone.addEventListener('change', () => {
+      generateTailoredCoverLetter();
+    });
+
+    copyCoverLetterBtn.addEventListener('click', () => {
+      if (!coverLetterOutput.value.trim()) return;
+      coverLetterOutput.select();
+      try {
+        document.execCommand('copy');
+        showCoverLetterFeedback('Copied cover letter to clipboard!');
+      } catch (e) {
+        showCoverLetterFeedback('Select and press Ctrl+C / Cmd+C to copy.');
+      }
+    });
+
+    // Step 3: Render Job Discovery Cards
+    function renderJobDiscovery() {
+      const query = jobSearchInput.value.trim().toLowerCase();
+      const locFilter = jobFilterType.value;
+
+      const filtered = OPEN_JOBS.filter(job => {
+        const matchesQuery =
+          job.title.toLowerCase().includes(query) ||
+          job.company.toLowerCase().includes(query) ||
+          job.description.toLowerCase().includes(query);
+        const matchesLoc = locFilter === 'All' || job.location === locFilter;
+        return matchesQuery && matchesLoc;
+      });
+
+      jobDiscoveryGrid.innerHTML = '';
+      if (filtered.length === 0) {
+        jobDiscoveryGrid.innerHTML = '<div class="col-span-2 text-center py-6 text-sm text-slate-500 italic">No open positions match your filter criteria.</div>';
+        return;
+      }
+
+      filtered.forEach(job => {
+        const isSelected = currentSelectedJob.title === job.title && currentSelectedJob.company === job.company;
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border transition-all flex flex-col justify-between gap-3 ${
+          isSelected
+            ? 'border-indigo-500 bg-indigo-50/40 ring-1 ring-indigo-500/30'
+            : 'border-slate-200 hover:border-indigo-300 bg-slate-50/50 hover:bg-indigo-50/20'
+        }`;
+
+        const top = document.createElement('div');
+        top.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <h3 class="font-bold text-slate-900 text-sm sm:text-base">${job.title}</h3>
+              <p class="text-xs text-slate-600 font-medium">${job.company} • <span class="text-indigo-600 font-semibold">${job.salary}</span></p>
+            </div>
+            <span class="px-2 py-0.5 bg-white border border-slate-200 text-slate-700 text-[11px] font-semibold rounded-md shrink-0">${job.location}</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-2 line-clamp-2">${job.description.replace(/Position:.*?\n/, '')}</p>
+        `;
+
+        const actionRow = document.createElement('div');
+        actionRow.className = 'flex items-center justify-between pt-2 border-t border-slate-200/70';
+
+        const hint = document.createElement('span');
+        hint.className = 'text-[11px] text-slate-500';
+        hint.textContent = isSelected ? '✓ Currently loaded in workspace' : 'Builds on your Master Base Resume';
+
+        const selectBtn = document.createElement('button');
+        selectBtn.type = 'button';
+        selectBtn.className = 'px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-2xs';
+        selectBtn.textContent = 'Select & Tailor ↓';
+        selectBtn.addEventListener('click', () => {
+          currentSelectedJob = {
+            title: job.title,
+            company: job.company,
+            location: job.location
+          };
+          selectedRoleTag.textContent = `${job.title} @ ${job.company}`;
+          jobDescInput.value = job.description;
+          if (autoResetBaseToggle.checked || !resumeTextInput.value.trim()) {
+            resumeTextInput.value = masterBaseResume;
+          }
+          updateWordCounts();
+          renderJobDiscovery();
+          runAnalysis(true);
+          resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        actionRow.appendChild(hint);
+        actionRow.appendChild(selectBtn);
+
+        card.appendChild(top);
+        card.appendChild(actionRow);
+        jobDiscoveryGrid.appendChild(card);
+      });
+    }
+
+    jobSearchInput.addEventListener('input', renderJobDiscovery);
+    jobFilterType.addEventListener('change', renderJobDiscovery);
+
+    // Step 3: Render Applications Tracker Table
+    function renderApplicationsTracker() {
+      trackerCountBadge.textContent = `${savedApplications.length} Application${savedApplications.length === 1 ? '' : 's'}`;
+      applicationsTableBody.innerHTML = '';
+
+      if (savedApplications.length === 0) {
+        applicationsTableBody.innerHTML = `
+          <tr>
+            <td colspan="5" class="py-6 text-center text-sm text-slate-500 italic">
+              No applications logged yet. Tailor your resume above and click "Save & Log Tailored Application".
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      savedApplications.forEach(app => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition-colors';
+
+        const scoreBadgeClass =
+          app.score >= 75
+            ? 'bg-emerald-100 text-emerald-800 border-emerald-200'
+            : app.score >= 45
+            ? 'bg-amber-100 text-amber-800 border-amber-200'
+            : 'bg-rose-100 text-rose-800 border-rose-200';
+
+        const tdRole = document.createElement('td');
+        tdRole.className = 'py-3 px-4';
+        tdRole.innerHTML = `
+          <div class="font-semibold text-slate-900">${app.title}</div>
+          <div class="text-xs text-slate-500">${app.company}</div>
+        `;
+
+        const tdLoc = document.createElement('td');
+        tdLoc.className = 'py-3 px-4 text-xs font-medium text-slate-600';
+        tdLoc.textContent = app.location;
+
+        const tdScore = document.createElement('td');
+        tdScore.className = 'py-3 px-4';
+        tdScore.innerHTML = `<span class="px-2.5 py-1 text-xs font-bold rounded-full border ${scoreBadgeClass}">${app.score}% Match</span>`;
+
+        const tdStatus = document.createElement('td');
+        tdStatus.className = 'py-3 px-4';
+        const statusSelect = document.createElement('select');
+        statusSelect.className = 'px-2.5 py-1 text-xs font-semibold rounded-lg border border-slate-300 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500';
+        ['Tailored & Ready', 'Applied', 'Interviewing', 'Offer Received'].forEach(st => {
+          const opt = document.createElement('option');
+          opt.value = st;
+          opt.textContent = st;
+          if (app.status === st) opt.selected = true;
+          statusSelect.appendChild(opt);
+        });
+        statusSelect.addEventListener('change', () => {
+          app.status = statusSelect.value;
+          persistApplications();
+        });
+        tdStatus.appendChild(statusSelect);
+
+        const tdActions = document.createElement('td');
+        tdActions.className = 'py-3 px-4 text-right space-x-1';
+
+        const loadBtn = document.createElement('button');
+        loadBtn.type = 'button';
+        loadBtn.className = 'px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-semibold rounded-md transition-colors';
+        loadBtn.textContent = 'Load Resume';
+        loadBtn.addEventListener('click', () => {
+          if (app.resumeSnapshot) {
+            resumeTextInput.value = app.resumeSnapshot;
+            updateWordCounts();
+            runAnalysis(true);
+            showNotice(`Loaded saved tailored resume for ${app.title} at ${app.company}.`, true);
+          }
+        });
+
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold rounded-md transition-colors';
+        delBtn.textContent = 'Delete';
+        delBtn.addEventListener('click', () => {
+          savedApplications = savedApplications.filter(item => item.id !== app.id);
+          persistApplications();
+          renderApplicationsTracker();
+        });
+
+        tdActions.appendChild(loadBtn);
+        tdActions.appendChild(delBtn);
+
+        tr.appendChild(tdRole);
+        tr.appendChild(tdLoc);
+        tr.appendChild(tdScore);
+        tr.appendChild(tdStatus);
+        tr.appendChild(tdActions);
+        applicationsTableBody.appendChild(tr);
+      });
+    }
+
+    logApplicationBtn.addEventListener('click', () => {
+      const jobText = jobDescInput.value.trim();
+      const resumeText = resumeTextInput.value.trim();
+
+      if (!jobText || !resumeText) {
+        showNotice('Please select a job and enter your resume before logging an application.');
+        return;
+      }
+
+      runAnalysis(true);
+
+      const newApp = {
+        id: 'app-' + Date.now(),
+        title: currentSelectedJob.title || 'Custom Role',
+        company: currentSelectedJob.company || 'Direct Application',
+        location: currentSelectedJob.location || 'Remote',
+        score: lastCalculatedScore,
+        status: lastCalculatedScore >= 75 ? 'Applied' : 'Tailored & Ready',
+        resumeSnapshot: resumeText
+      };
+
+      savedApplications.unshift(newApp);
+      persistApplications();
+      renderApplicationsTracker();
+      showNotice(`Logged "${newApp.title}" (${newApp.score}% ATS Match) to your Application Tracker below!`, true);
+      document.getElementById('trackerSection').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    loadSampleBtn.addEventListener('click', () => {
+      currentSelectedJob = {
+        title: OPEN_JOBS[0].title,
+        company: OPEN_JOBS[0].company,
+        location: OPEN_JOBS[0].location
+      };
+      selectedRoleTag.textContent = `${OPEN_JOBS[0].title} @ ${OPEN_JOBS[0].company}`;
+      jobDescInput.value = SAMPLE_JOB;
+      resumeTextInput.value = masterBaseResume;
+      updateWordCounts();
+      noticeBanner.classList.add('hidden');
+      renderJobDiscovery();
+      runAnalysis(true);
+    });
+
+    clearBtn.addEventListener('click', () => {
+      jobDescInput.value = '';
+      resumeTextInput.value = '';
+      selectedRoleTag.textContent = 'Custom Role';
+      updateWordCounts();
+      noticeBanner.classList.add('hidden');
+      resultsContainer.classList.add('hidden');
+    });
+
+    // Normalized Keyword Extractor (strips trailing/leading periods so "Node.js." -> "node.js")
+    function extractKeywords(text) {
+      if (!text) return [];
+      const words = text
+        .toLowerCase()
+        .replace(/[^a-z0-9#+.]/g, ' ')
+        .split(/\s+/)
+        .map(w => w.replace(/^[.]+|[.]+$/g, '').trim())
+        .filter(w => w.length > 2 && !STOP_WORDS.has(w));
+
+      const freq = {};
+      words.forEach(w => {
+        freq[w] = (freq[w] || 0) + 1;
+      });
+
+      return Object.entries(freq)
+        .sort((a, b) => b[1] - a[1])
+        .map(entry => entry[0]);
+    }
+
+    function generateBulletTemplates(keyword) {
+      const cleanKw = keyword.toUpperCase() === keyword ? keyword : keyword;
+      return [
+        {
+          style: 'Impact & Delivery',
+          text: `- Implemented ${cleanKw} best practices across project workflows, improving delivery reliability by 25%.`
+        },
+        {
+          style: 'Technical Execution',
+          text: `- Built and maintained scalable components utilizing ${cleanKw}, ensuring clean code and cross-platform compatibility.`
+        },
+        {
+          style: 'Collaboration & Agile',
+          text: `- Collaborated with cross-functional peers to integrate ${cleanKw} solutions and resolve high-priority technical challenges.`
+        }
+      ];
+    }
+
+    function selectKeywordForTailoring(keyword) {
+      currentActiveKeyword = keyword;
+      activeKeywordBadge.textContent = keyword;
+      const templates = generateBulletTemplates(keyword);
+      customBulletInput.value = templates[0].text;
+
+      bulletSuggestionsList.innerHTML = '';
+      templates.forEach(tpl => {
+        const card = document.createElement('div');
+        card.className = 'p-3 bg-slate-50 hover:bg-indigo-50/60 border border-slate-200 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors';
+
+        const textWrap = document.createElement('div');
+        const tag = document.createElement('span');
+        tag.className = 'inline-block text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded mb-1';
+        tag.textContent = tpl.style;
+
+        const p = document.createElement('p');
+        p.className = 'text-xs sm:text-sm text-slate-800 font-mono';
+        p.textContent = tpl.text;
+
+        textWrap.appendChild(tag);
+        textWrap.appendChild(p);
+
+        const btnGroup = document.createElement('div');
+        btnGroup.className = 'flex items-center gap-1.5 shrink-0';
+
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'px-2.5 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 text-xs font-semibold rounded-lg transition-colors';
+        editBtn.textContent = 'Edit';
+        editBtn.addEventListener('click', () => {
+          customBulletInput.value = tpl.text;
+          customBulletInput.focus();
+        });
+
+        const addBtn = document.createElement('button');
+        addBtn.type = 'button';
+        addBtn.className = 'px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-2xs';
+        addBtn.textContent = '+ Insert';
+        addBtn.addEventListener('click', () => {
+          appendBulletToResume(tpl.text, keyword);
+        });
+
+        btnGroup.appendChild(editBtn);
+        btnGroup.appendChild(addBtn);
+
+        card.appendChild(textWrap);
+        card.appendChild(btnGroup);
+        bulletSuggestionsList.appendChild(card);
+      });
+    }
+
+    function appendBulletToResume(bulletText, keywordUsed) {
+      const currentResume = resumeTextInput.value.trim();
+      resumeTextInput.value = currentResume ? `${currentResume}\n${bulletText}` : bulletText;
+      updateWordCounts();
+      showTailorFeedback(`Added "${keywordUsed}" bullet to your resume & updated ATS score!`);
+      runAnalysis(true);
+    }
+
+    insertCustomBulletBtn.addEventListener('click', () => {
+      const bullet = customBulletInput.value.trim();
+      if (!bullet) {
+        showNotice('Please enter or select a bullet point to insert into your resume.');
+        return;
+      }
+      appendBulletToResume(bullet, currentActiveKeyword || 'custom skill');
+    });
+
+    copyResumeBtn.addEventListener('click', () => {
+      const text = resumeTextInput.value;
+      if (!text) return;
+      resumeTextInput.select();
+      try {
+        document.execCommand('copy');
+        showTailorFeedback('Copied full tailored resume to clipboard!');
+      } catch (err) {
+        showTailorFeedback('Select and press Ctrl+C / Cmd+C to copy.');
+      }
+    });
+
+    function runAnalysis(silent = false) {
+      const jobText = jobDescInput.value.trim();
+      const resumeText = resumeTextInput.value.trim();
+
+      if (!jobText || !resumeText) {
+        if (!silent) {
+          showNotice('Please fill in both the Job Description and your Resume before analyzing.');
+        }
+        return;
+      }
+
+      noticeBanner.classList.add('hidden');
+
+      const jobKeywords = extractKeywords(jobText).slice(0, 20);
+      const resumeKeywordsSet = new Set(extractKeywords(resumeText));
+
+      const matched = [];
+      const missing = [];
+
+      jobKeywords.forEach(kw => {
+        if (resumeKeywordsSet.has(kw)) {
+          matched.push(kw);
+        } else {
+          missing.push(kw);
+        }
+      });
+
+      lastMatchedKeywords = matched;
+      lastMissingKeywords = missing;
+      const totalKeywords = jobKeywords.length;
+      const score = totalKeywords > 0 ? Math.round((matched.length / totalKeywords) * 100) : 0;
+      lastCalculatedScore = score;
+
+      scoreDisplay.textContent = `${score}%`;
+      scoreBar.style.width = `${score}%`;
+
+      if (score >= 75) {
+        scoreLabel.textContent = 'High ATS Match (Ready to Apply)';
+        scoreLabel.className = 'text-xs font-bold text-emerald-600 mt-1';
+        scoreBar.className = 'bg-emerald-600 h-3 rounded-full transition-all duration-500';
+      } else if (score >= 45) {
+        scoreLabel.textContent = 'Moderate Match (Click Missing Skills Below)';
+        scoreLabel.className = 'text-xs font-bold text-amber-600 mt-1';
+        scoreBar.className = 'bg-amber-500 h-3 rounded-full transition-all duration-500';
+      } else {
+        scoreLabel.textContent = 'Low ATS Match (High Filter Risk)';
+        scoreLabel.className = 'text-xs font-bold text-rose-600 mt-1';
+        scoreBar.className = 'bg-rose-500 h-3 rounded-full transition-all duration-500';
+      }
+
+      matchedCount.textContent = matched.length;
+      missingCount.textContent = missing.length;
+
+      missingKeywordsList.innerHTML = '';
+      if (missing.length === 0) {
+        missingKeywordsList.innerHTML = '<span class="text-sm text-emerald-700 font-semibold">🎉 100% Keyword Coverage! Every top skill from the job posting is in your resume.</span>';
+        activeKeywordBadge.textContent = 'All Matched!';
+        bulletSuggestionsList.innerHTML = '<div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs sm:text-sm text-emerald-800 font-medium">Your resume covers 100% of the top detected keywords. You can still add custom accomplishments on the right!</div>';
+      } else {
+        missing.forEach((kw, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'px-2.5 py-1 bg-rose-100 hover:bg-rose-200 text-rose-800 text-xs font-semibold rounded-lg border border-rose-300 transition-colors cursor-pointer flex items-center gap-1 shadow-2xs';
+          btn.innerHTML = `<span>+ ${kw}</span> <span class="text-[10px] text-rose-600">✨</span>`;
+          btn.addEventListener('click', () => {
+            selectKeywordForTailoring(kw);
+          });
+          missingKeywordsList.appendChild(btn);
+
+          if (idx === 0 && (!currentActiveKeyword || !missing.includes(currentActiveKeyword))) {
+            selectKeywordForTailoring(kw);
+          }
+        });
+      }
+
+      matchedKeywordsList.innerHTML = '';
+      if (matched.length === 0) {
+        matchedKeywordsList.innerHTML = '<span class="text-sm text-slate-500 italic">No matching keywords found yet.</span>';
+      } else {
+        matched.forEach(kw => {
+          const badge = document.createElement('span');
+          badge.className = 'px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-lg border border-emerald-200';
+          badge.textContent = `✓ ${kw}`;
+          matchedKeywordsList.appendChild(badge);
+        });
+      }
+
+      runAtsFormattingAudit(resumeText);
+      generateTailoredCoverLetter();
+
+      if (isHeatmapViewActive) {
+        renderJobHeatmap();
+      }
+      if (isDiffViewActive) {
+        renderResumeDiff();
+      }
+
+      resultsContainer.classList.remove('hidden');
+    }
+
+    analyzeBtn.addEventListener('click', () => {
+      runAnalysis(false);
+      if (!resultsContainer.classList.contains('hidden')) {
+        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+    // Auto-Initialize Full Working Experience on Startup
+    jobDescInput.value = SAMPLE_JOB;
+    resumeTextInput.value = masterBaseResume;
+    selectedRoleTag.textContent = `${OPEN_JOBS[0].title} @ ${OPEN_JOBS[0].company}`;
+    updateWordCounts();
+    renderJobDiscovery();
+    renderApplicationsTracker();
+    runAnalysis(true);
+  </script>
+</body>
+</html>
